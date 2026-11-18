@@ -372,6 +372,26 @@ describe('Sized images audit', () => {
     });
   });
 
+  describe('percentage height attributes', () => {
+    it('fails when a percentage height does not reserve an explicit height', async () => {
+      const result = await runAudit({
+        attributeWidth: '300',
+        attributeHeight: '100%',
+        cssEffectiveRules: {width: null, height: null},
+      });
+      expect(result.score).toEqual(0);
+    });
+
+    it('passes when explicit CSS height compensates for percentage HTML height', async () => {
+      const result = await runAudit({
+        attributeWidth: '300',
+        attributeHeight: '100%',
+        cssEffectiveRules: {width: null, height: '200px'},
+      });
+      expect(result.score).toEqual(1);
+    });
+  });
+
   describe('has invalid or non-explicit width', () => {
     it('fails when an image has invalid width attribute', async () => {
       const result = await runAudit({
