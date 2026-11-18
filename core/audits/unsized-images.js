@@ -60,7 +60,10 @@ class UnsizedImages extends Audit {
     const attrWidth = image.attributeWidth;
     const attrHeight = image.attributeHeight;
     const htmlWidthIsExplicit = ImageElements.doesHtmlAttrProvideExplicitSize(attrWidth);
-    const htmlHeightIsExplicit = ImageElements.doesHtmlAttrProvideExplicitSize(attrHeight);
+    // A percentage height attribute does not reliably reserve space before an image loads.
+    // Keep percentage width handling unchanged (see issue #14449).
+    const htmlHeightIsExplicit = ImageElements.doesHtmlAttrProvideExplicitSize(attrHeight) &&
+      !attrHeight?.includes('%');
     if (htmlWidthIsExplicit && htmlHeightIsExplicit) return true;
 
     // Perhaps we hit reachedGatheringBudget before collecting this image's cssWidth/Height
